@@ -1,51 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Staff Panel</title>
+
   <link rel="stylesheet" href="style.css">
+
   <style>
     .list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       flex: 1;
       overflow-y: auto;
     }
 
     .card-edit {
-      background: var(--item-bg);
-      border: 1px solid #0e630e;
+      background: var(--card-bg);
+      border: 1px solid #a8bca9;
       border-radius: 16px;
-      padding: 10px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 10px;
+      box-shadow: 0 2px 8px rgba(31, 43, 31, 0.08);
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 2px;
+    }
+
+    .card-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: #d9e3d9;
+      border-radius: 20px;
+      padding: 2px 8px;
+    }
+
+    .card-cat {
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 20px;
+      padding: 2px 8px;
+      text-transform: capitalize;
+    }
+
+    .card-cat.food {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .card-cat.beverage {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+
+    .card-cat.snacks {
+      background: #fff3e0;
+      color: #e65100;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex: 1;
+    }
+
+    .field label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
     }
 
     .row {
       display: flex;
-      gap: 6px;
-      align-items: center;
+      gap: 8px;
+      align-items: flex-end;
     }
 
     .inp {
-      padding: 6px 10px;
+      padding: 7px 10px;
       border-radius: 8px;
       border: 1px solid #a8bca9;
-      background: #fff;
+      background: #f4f7f4;
       font-size: 13px;
       margin: 0;
+      width: 100%;
+      transition: border-color 0.2s;
+    }
+
+    .inp:focus {
+      outline: none;
+      border-color: var(--primary-pill);
+      background: #fff;
     }
 
     .btn-act {
-      padding: 6px 10px;
+      padding: 7px 10px;
       border-radius: 8px;
       border: none;
       font-size: 12px;
-      font-weight: bold;
+      font-weight: 700;
       cursor: pointer;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-act:hover {
+      opacity: 0.85;
     }
 
     .btn-save {
@@ -53,16 +125,28 @@
       color: #fff;
       border: none;
       border-radius: 8px;
-      padding: 6px 12px;
+      padding: 7px 14px;
       font-size: 13px;
-      font-weight: bold;
+      font-weight: 700;
       cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+
+    .btn-save:hover {
+      background: var(--pill-hover);
+    }
+
+    .card-divider {
+      border: none;
+      border-top: 1px solid #cdd9cd;
+      margin: 0;
     }
 
     .modal {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0, 0, 0, 0.45);
       display: none;
       justify-content: center;
       align-items: center;
@@ -71,24 +155,70 @@
 
     .modal-box {
       background: var(--card-bg);
-      padding: 20px;
-      border-radius: 18px;
+      padding: 24px 20px;
+      border-radius: 20px;
       width: 90%;
-      max-width: 320px;
+      max-width: 340px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
+      box-shadow: 0 12px 32px rgba(31, 43, 31, 0.18);
+    }
+
+    .modal-box h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-dark);
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .modal-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .modal-field label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .modal-field input,
+    .modal-field select {
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid #a8bca9;
+      background: #f4f7f4;
+      font-size: 14px;
+      margin: 0;
+      width: 100%;
+      transition: border-color 0.2s;
+    }
+
+    .modal-field input:focus,
+    .modal-field select:focus {
+      outline: none;
+      border-color: var(--primary-pill);
+      background: #fff;
     }
   </style>
 </head>
+
 <body>
   <div class="card card-full">
+
     <div class="header">
       <button class="back-btn" onclick="location.href='admin-home.html'">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+        </svg>
       </button>
       <h2>Manage Items</h2>
-      <p>Edit stock &amp; price</p>
+      <p>Edit stock & price</p>
     </div>
 
     <button class="btn-full" style="padding:10px;margin-bottom:10px;" onclick="openAdd()">+ Add New Item</button>
@@ -99,22 +229,43 @@
 
   <div class="modal" id="addModal">
     <div class="modal-box">
-      <h3 style="text-align:center;">Add Item</h3>
+      <h3>＋ Add New Item</h3>
 
-      <input type="text" id="newName" placeholder="Name">
-      <input type="text" id="newDesc" placeholder="Description">
-      <input type="number" id="newPrice" placeholder="Price">
-      <input type="number" id="newQty" placeholder="Quantity">
+      <div class="modal-field">
+        <label>Item Name</label>
+        <input type="text" id="newName" placeholder="e.g. Masala Dosa">
+      </div>
 
-      <select id="newCat" style="padding:8px;border-radius:10px;border:none;background:#d9e3d9;font-weight:bold;">
-        <option value="food">Food</option>
-        <option value="beverage">Beverage</option>
-        <option value="snacks">Snacks</option>
-      </select>
+      <div class="modal-field">
+        <label>Description</label>
+        <input type="text" id="newDesc" placeholder="Short description (optional)">
+      </div>
 
       <div class="row">
-        <button class="btn-act" style="flex:1;background:#d9e3d9;" onclick="closeAdd()">Cancel</button>
-        <button class="btn-save" style="flex:1;" onclick="addItem()">Save</button>
+        <div class="modal-field">
+          <label>Price (₹)</label>
+          <input type="number" id="newPrice" placeholder="0" min="0">
+        </div>
+        <div class="modal-field">
+          <label>Quantity</label>
+          <input type="number" id="newQty" placeholder="0" min="0">
+        </div>
+      </div>
+
+      <div class="modal-field">
+        <label>Category</label>
+        <select id="newCat">
+          <option value="food">☰ Food</option>
+          <option value="beverage">◉ Beverage</option>
+          <option value="snacks">★ Snacks</option>
+        </select>
+      </div>
+
+      <div class="row" style="margin-top:4px;">
+        <button class="btn-act"
+          style="flex:1;padding:10px;background:#d9e3d9;color:var(--text-dark);border-radius:10px;"
+          onclick="closeAdd()">Cancel</button>
+        <button class="btn-save" style="flex:1;padding:10px;border-radius:10px;" onclick="addItem()">✔ Add Item</button>
       </div>
     </div>
   </div>
@@ -126,34 +277,58 @@
     var items = [];
 
     function render() {
-      getMenuItems(function(fetchedItems) {
+      getMenuItems(function (fetchedItems) {
         items = fetchedItems || [];
 
         var listContainer = document.getElementById('staffList');
+
         listContainer.innerHTML = '';
 
-        items.forEach(function(item, index) {
+        items.forEach(function (item, index) {
+
           var isAvailable = item.isAvailable && item.qty > 0;
+          var cat = (item.category || 'food').toLowerCase();
 
           var card = document.createElement('div');
           card.className = 'card-edit';
 
           card.innerHTML =
-            '<div class="row">' +
-              '<input class="inp" style="flex:1;font-weight:bold;" value="' + item.name + '" id="n-' + index + '">' +
-              '<input type="number" class="inp" style="width:65px;" value="' + item.price + '" id="p-' + index + '">' +
+            '<div class="card-meta">' +
+            '<span class="card-num">#' + (index + 1) + '</span>' +
+            '<span class="card-cat ' + cat + '">' + cat + '</span>' +
             '</div>' +
 
             '<div class="row">' +
-              '<input type="number" class="inp" style="width:65px;" value="' + item.qty + '" id="q-' + index + '">' +
+            '<div class="field">' +
+            '<label>Item Name</label>' +
+            '<input class="inp" style="font-weight:600;" value="' + item.name + '" id="n-' + index + '">' +
+            '</div>' +
+            '<div class="field" style="max-width:90px;">' +
+            '<label>Price (₹)</label>' +
+            '<input type="number" class="inp" value="' + item.price + '" id="p-' + index + '">' +
+            '</div>' +
+            '</div>' +
 
-              '<button class="btn-act" style="flex:1;background:' +
-                (isAvailable ? '#e8f5e9;color:#2e7d32' : '#ffebee;color:#c62828') +
-                ';" onclick="toggle(' + index + ')">' +
-                (isAvailable ? 'Available' : 'Sold Out') +
-              '</button>' +
+            '<hr class="card-divider">' +
 
-              '<button class="btn-save" onclick="save(' + index + ')">Save</button>' +
+            '<div class="row">' +
+            '<div class="field" style="max-width:80px;">' +
+            '<label>Quantity</label>' +
+            '<input type="number" class="inp" value="' + item.qty + '" id="q-' + index + '">' +
+            '</div>' +
+
+            '<div class="field">' +
+            '<label>Status (click to change)</label>' +
+            '<button class="btn-act" style="width:100%;background:' +
+            (isAvailable ? '#e8f5e9;color:#2e7d32' : '#ffebee;color:#c62828') +
+            ';" onclick="toggle(' + index + ')">' +
+            (isAvailable ? ' Available' : ' Sold Out') +
+            '</button>' +
+            '</div>' +
+
+            '<div style="display:flex;flex-direction:column;justify-content:flex-end;">' +
+            '<button class="btn-save" onclick="save(' + index + ')">▶ Save</button>' +
+            '</div>' +
             '</div>';
 
           listContainer.appendChild(card);
@@ -161,17 +336,20 @@
       });
     }
 
+
     function openAdd() {
       document.getElementById('addModal').style.display = 'flex';
     }
+
 
     function closeAdd() {
       document.getElementById('addModal').style.display = 'none';
     }
 
+
     function addItem() {
-      var name     = document.getElementById('newName').value.trim();
-      var price    = parseInt(document.getElementById('newPrice').value) || 0;
+      var name = document.getElementById('newName').value.trim();
+      var price = parseInt(document.getElementById('newPrice').value) || 0;
       var quantity = parseInt(document.getElementById('newQty').value) || 0;
 
       if (!name || price <= 0) {
@@ -180,19 +358,20 @@
       }
 
       var newItem = {
-        name:        name,
-        desc:        document.getElementById('newDesc').value.trim() || 'Canteen item',
-        price:       price,
-        category:    document.getElementById('newCat').value,
-        qty:         quantity,
+        name: name,
+        desc: document.getElementById('newDesc').value.trim() || 'Canteen item',
+        price: price,
+        category: document.getElementById('newCat').value,
+        qty: quantity,
         isAvailable: quantity > 0 ? 1 : 0
       };
 
-      saveMenuItem(newItem, function() {
+      saveMenuItem(newItem, function () {
         closeAdd();
         render();
       });
     }
+
 
     function toggle(index) {
       var item = items[index];
@@ -208,22 +387,25 @@
       saveMenuItem(item, render);
     }
 
+
     function save(index) {
       var item = items[index];
 
-      item.name  = document.getElementById('n-' + index).value.trim();
+      item.name = document.getElementById('n-' + index).value.trim();
       item.price = parseInt(document.getElementById('p-' + index).value) || 0;
-      item.qty   = parseInt(document.getElementById('q-' + index).value) || 0;
+      item.qty = parseInt(document.getElementById('q-' + index).value) || 0;
 
       item.isAvailable = item.qty > 0 ? 1 : 0;
 
-      saveMenuItem(item, function() {
+      saveMenuItem(item, function () {
         alert('Saved!');
         render();
       });
     }
 
+
     render();
   </script>
 </body>
+
 </html>
